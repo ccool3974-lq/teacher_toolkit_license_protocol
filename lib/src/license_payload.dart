@@ -1,64 +1,59 @@
-import 'license_tier.dart';
-
 class LicensePayload {
   const LicensePayload({
     required this.product,
     required this.licenseId,
-    required this.tier,
     required this.bindName,
+    this.bindUserCode,
     required this.durationDays,
     required this.permanent,
     required this.issuedAt,
-    this.activationDeadline,
-    required this.features,
+    required this.activationDeadline,
     required this.nonce,
   });
 
   final String product;
   final String licenseId;
-  final LicenseTier tier;
   final String bindName;
+  final String? bindUserCode;
   final int durationDays;
   final bool permanent;
   final DateTime issuedAt;
-  final DateTime? activationDeadline;
-  final List<String> features;
+  final DateTime activationDeadline;
   final String nonce;
 
   Map<String, Object?> toMap() {
     return <String, Object?>{
       'product': product,
       'licenseId': licenseId,
-      'tier': tier.storageValue,
       'bindName': bindName,
+      'bindUserCode': bindUserCode,
       'durationDays': durationDays,
       'permanent': permanent,
       'issuedAt': issuedAt.toIso8601String(),
-      'activationDeadline': activationDeadline?.toIso8601String(),
-      'features': features,
+      'activationDeadline': activationDeadline.toIso8601String(),
       'nonce': nonce,
     };
   }
 
   factory LicensePayload.fromMap(Map<String, Object?> map) {
+    final DateTime issuedAt =
+        DateTime.tryParse(map['issuedAt'] as String? ?? '') ??
+        DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+    final DateTime activationDeadline =
+        DateTime.tryParse(map['activationDeadline'] as String? ?? '') ??
+        issuedAt.add(const Duration(days: 30));
+
     return LicensePayload(
       product: (map['product'] as String? ?? '').trim(),
       licenseId: (map['licenseId'] as String? ?? '').trim(),
-      tier: LicenseTier.fromStorageValue(map['tier'] as String?),
       bindName: (map['bindName'] as String? ?? '').trim(),
+      bindUserCode: (map['bindUserCode'] as String?)?.trim(),
       durationDays: map['durationDays'] is int
           ? map['durationDays'] as int
           : int.tryParse('${map['durationDays']}') ?? 0,
       permanent: map['permanent'] == true,
-      issuedAt: DateTime.tryParse(map['issuedAt'] as String? ?? '') ??
-          DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
-      activationDeadline:
-          map['activationDeadline'] == null
-              ? null
-              : DateTime.tryParse(map['activationDeadline'] as String),
-      features: ((map['features'] as List<dynamic>?) ?? const <dynamic>[])
-          .map((dynamic item) => item.toString())
-          .toList(),
+      issuedAt: issuedAt,
+      activationDeadline: activationDeadline,
       nonce: (map['nonce'] as String? ?? '').trim(),
     );
   }

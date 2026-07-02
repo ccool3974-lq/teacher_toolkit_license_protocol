@@ -1,1 +1,1 @@
-const int licenseProtocolVersion = 1;
+const int licenseProtocolVersion = 2;
