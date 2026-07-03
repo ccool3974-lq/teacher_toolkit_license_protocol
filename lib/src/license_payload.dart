@@ -1,6 +1,7 @@
 class LicensePayload {
   const LicensePayload({
     required this.product,
+    required this.appVersion,
     required this.licenseId,
     required this.bindName,
     this.bindUserCode,
@@ -12,6 +13,7 @@ class LicensePayload {
   });
 
   final String product;
+  final String appVersion;
   final String licenseId;
   final String bindName;
   final String? bindUserCode;
@@ -24,6 +26,7 @@ class LicensePayload {
   Map<String, Object?> toMap() {
     return <String, Object?>{
       'product': product,
+      'appVersion': appVersion,
       'licenseId': licenseId,
       'bindName': bindName,
       'bindUserCode': bindUserCode,
@@ -45,6 +48,7 @@ class LicensePayload {
 
     return LicensePayload(
       product: (map['product'] as String? ?? '').trim(),
+      appVersion: (map['appVersion'] as String? ?? '').trim(),
       licenseId: (map['licenseId'] as String? ?? '').trim(),
       bindName: (map['bindName'] as String? ?? '').trim(),
       bindUserCode: (map['bindUserCode'] as String?)?.trim(),

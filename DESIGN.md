@@ -16,6 +16,7 @@
 `LicensePayload` 当前字段为：
 
 - `product`
+- `appVersion`
 - `licenseId`
 - `bindName`
 - `bindUserCode`

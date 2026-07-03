@@ -4,6 +4,7 @@ import 'package:teacher_toolkit_license_protocol/teacher_toolkit_license_protoco
 void main() {
   LicensePayload buildPayload({
     String product = licenseProductName,
+    String appVersion = '1.2.3',
     String licenseId = 'LIC-0001',
     String bindName = '张老师',
     String? bindUserCode = 'USER-001',
@@ -17,6 +18,7 @@ void main() {
 
     return LicensePayload(
       product: product,
+      appVersion: appVersion,
       licenseId: licenseId,
       bindName: bindName,
       bindUserCode: bindUserCode,
@@ -36,6 +38,7 @@ void main() {
     final LicensePayload decoded = LicenseCodec.decodePayloadSegment(segment);
 
     expect(decoded.product, payload.product);
+    expect(decoded.appVersion, payload.appVersion);
     expect(decoded.licenseId, payload.licenseId);
     expect(decoded.bindName, payload.bindName);
     expect(decoded.bindUserCode, payload.bindUserCode);
@@ -54,6 +57,7 @@ void main() {
     final Map<String, Object?> map = buildPayload(bindUserCode: null).toMap();
 
     expect(map['product'], licenseProductName);
+    expect(map['appVersion'], '1.2.3');
     expect(map['bindUserCode'], isNull);
     expect(map['activationDeadline'], isNotNull);
     expect(map.containsKey('tier'), isFalse);
@@ -65,6 +69,7 @@ void main() {
     () {
       final LicensePayload payload = LicensePayload.fromMap(<String, Object?>{
         'product': licenseProductName,
+        'appVersion': '1.2.3',
         'licenseId': 'LIC-0002',
         'bindName': '李老师',
         'durationDays': 30,
@@ -91,6 +96,17 @@ void main() {
         'durationDays must be greater than 0 for non-permanent licenses',
       ),
     );
+  });
+
+  test('payload requires appVersion', () {
+    final LicensePayloadValidationResult result =
+        LicensePayloadValidator.validateForIssue(
+          buildPayload(appVersion: ' '),
+          DateTime.utc(2026, 4, 1),
+        );
+
+    expect(result.isValid, isFalse);
+    expect(result.errors, contains('appVersion must not be empty'));
   });
 
   test('activation fails after activationDeadline', () {

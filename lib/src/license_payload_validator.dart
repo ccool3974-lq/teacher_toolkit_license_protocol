@@ -39,6 +39,9 @@ class LicensePayloadValidator {
     if (payload.product != licenseProductName) {
       errors.add('product must be $licenseProductName');
     }
+    if (payload.appVersion.trim().isEmpty) {
+      errors.add('appVersion must not be empty');
+    }
     if (payload.licenseId.trim().isEmpty) {
       errors.add('licenseId must not be empty');
     }
